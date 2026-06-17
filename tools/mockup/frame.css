@@ -12,7 +12,9 @@
 
 .device{
   --dev-w:380px;          /* device width — the only size knob you usually set */
-  --dev-ar:0.462;         /* device aspect W/H (iPhone Pro ≈ 0.462) */
+  --dev-ar:0.476;         /* device aspect W/H (real iPhone Pro Max silhouette;
+                             chosen so the screen aperture matches the 1320×2868
+                             capture aspect → object-fit:cover crops ~nothing) */
   --dev-radius:0.135;     /* outer corner radius as a fraction of width */
   --dev-rail:0.008;       /* white metal edge thickness (fraction of width) */
   --dev-bezel:0.022;      /* black glass bezel band thickness (fraction of width) */
