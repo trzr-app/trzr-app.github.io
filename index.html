@@ -410,8 +410,8 @@
     </div>
     <div class="flinks">
       <a href="https://apps.apple.com/app/id6771160852" target="_blank" rel="noopener" data-i18n="footer.app">App Store</a>
-      <a href="https://trzr-app.github.io/policy/" target="_blank" rel="noopener" data-i18n="footer.privacy">プライバシーポリシー</a>
-      <a href="https://trzr-app.github.io/policy/support/" target="_blank" rel="noopener" data-i18n="footer.support">サポート</a>
+      <a href="https://trzr-app.github.io/policy/" data-i18n="footer.privacy">プライバシーポリシー</a>
+      <a href="https://trzr-app.github.io/policy/support/" data-i18n="footer.support">サポート</a>
       <a href="https://x.com/trzrapp" target="_blank" rel="noopener">X @trzrapp</a>
     </div>
     <span class="fcopy">© 2026 TRZR</span>
@@ -505,7 +505,9 @@ const STRINGS = {
 };
 
 function setLang(lang){
+  if(lang!=='ja'&&lang!=='en')lang='ja';
   document.documentElement.lang = lang;
+  try{localStorage.setItem('trzr-lang',lang);}catch(e){}
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k = el.getAttribute('data-i18n');
     if(STRINGS[lang] && STRINGS[lang][k] !== undefined) el.innerHTML = STRINGS[lang][k];
@@ -521,6 +523,9 @@ function setLang(lang){
     ? 'TRZR — 書くほど、見返したくなる日記。'
     : 'TRZR — The more you write, the more you look back.';
 }
+
+let savedLang='ja';try{savedLang=localStorage.getItem('trzr-lang')||'ja';}catch(e){}
+if(savedLang!=='ja')setLang(savedLang);
 
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 document.body.classList.add('play');
