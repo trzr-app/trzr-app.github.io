@@ -82,7 +82,6 @@ body{font-family:var(--font);background:var(--ink);color:var(--snow);overflow:hi
   </div>
   <div class="stage">
     <div class="device${bareCls}">
-      <div class="island"></div>
       <span class="btn action"></span><span class="btn vol-up"></span>
       <span class="btn vol-dn"></span><span class="btn power"></span>
       <div class="screen">${media}</div>
