@@ -13,8 +13,8 @@
 .device{
   --dev-w:380px;          /* device width — the only size knob you usually set */
   --dev-ar:0.462;         /* device aspect W/H (iPhone Pro ≈ 0.462) */
-  --dev-radius:0.135;     /* corner radius as a fraction of width */
-  --dev-bezel:3.0%;       /* uniform white body thickness */
+  --dev-radius:0.135;     /* outer corner radius as a fraction of width */
+  --dev-bezel:0.03;       /* white body thickness as a fraction of width */
 
   position:relative;
   width:var(--dev-w);
@@ -22,7 +22,7 @@
   /* brushed white-titanium rail */
   background:linear-gradient(135deg,#dcdce1 0%,#fafafa 20%,#ffffff 48%,#eaeaee 72%,#d4d4da 100%);
   border-radius:calc(var(--dev-w) * var(--dev-radius));
-  padding:var(--dev-bezel);
+  padding:calc(var(--dev-w) * var(--dev-bezel));
   box-shadow:
     0 2px 5px rgba(0,0,0,.35),
     0 28px 70px rgba(0,0,0,.5),
@@ -33,9 +33,11 @@
   position:relative;
   width:100%;height:100%;
   overflow:hidden;
-  border-radius:calc(var(--dev-w) * (var(--dev-radius) - var(--dev-bezel)/100));
+  border-radius:calc(var(--dev-w) * (var(--dev-radius) - var(--dev-bezel)));
   background:#000;
   box-shadow:0 0 0 2px #0c0c0d;   /* thin black glass edge around the display */
+  transform:translateZ(0);        /* force WebKit to clip video to the radius */
+  isolation:isolate;
 }
 .device .screen img,
 .device .screen video{
@@ -43,6 +45,7 @@
   object-fit:cover;
   object-position:top center;
   display:block;
+  border-radius:inherit;          /* round the media itself as a fallback */
 }
 /* Dynamic Island */
 .device .island{
