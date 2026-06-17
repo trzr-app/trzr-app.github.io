@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRZR — 書くほど、見返したくなる日記。</title>
+<meta name="description" content="思いついた一行をためておくと、あとで心地よくさかのぼれる。テーマ・人・場所・天気とともに記録する、自分だけの日記アプリ。">
+<meta property="og:title" content="TRZR — 書くほど、見返したくなる日記。">
+<meta property="og:description" content="思いついた一行をためて、あとで心地よくさかのぼる。テーマ・人・場所・天気とともに残す、自分だけの日記アプリ。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0B0C">
+<link rel="icon" href="icon_trzr_black.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0B0C;
+    --snow:#F7F6F2;
+    --white:#FFFFFF;
+    --g1:#9C9C9C;
+    --g2:#5E5E60;
+    --hair:rgba(247,246,242,.14);
+    --font:"Noto Sans JP",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans",sans-serif;
+    --maxw:1180px;
+    --slash:polygon(0 5.2vw, 100% 0, 100% 100%, 0 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--font);background:var(--ink);color:var(--snow);
+    line-height:1.7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;width:100%}
+  .sec{padding:110px 0;position:relative}
+  .eyebrow{font-weight:700;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--g1)}
+  ::selection{background:var(--snow);color:var(--ink)}
+
+  /* gestalt mark */
+  .defs{position:absolute;width:0;height:0;overflow:hidden}
+  .mark{display:block}
+  .mark use,.mark path,.mark rect{fill:currentColor}
+
+  /* nav */
+  nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:20px 28px;transition:padding .35s ease,background .35s ease,backdrop-filter .35s ease}
+  nav.scrolled{padding:12px 28px;background:rgba(11,11,12,.72);backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);box-shadow:0 1px 0 var(--hair)}
+  .navbrand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--snow)}
+  .navbrand .mark{width:26px;height:26px;color:var(--snow)}
+  .navbrand .wordmark{font-weight:700;letter-spacing:.24em;font-size:17px}
+  nav .right{display:flex;align-items:center;gap:14px}
+  .langtoggle{display:inline-flex;border:1px solid var(--hair);overflow:hidden}
+  .langtoggle button{border:0;background:transparent;cursor:pointer;padding:7px 13px;color:var(--g1);font-family:var(--font);font-weight:700;font-size:12px;letter-spacing:.08em;transition:background .2s,color .2s}
+  .langtoggle button.active{background:var(--snow);color:var(--ink)}
+
+  /* App Store button */
+  /* 公式 App Store バッジ (改変禁止: 色/角丸/比率は変えない。サイズと余白のみ) */
+  .badge{display:inline-flex;transition:transform .18s ease}
+  .badge:hover{transform:translateY(-2px)}
+  .badge:active{transform:translateY(0)}
+  .badge img{display:block;height:54px;width:auto}
+  .badge-nav img{height:38px}
+  @media(max-width:600px){.badge-nav{display:none}}
+
+  /* hero */
+  .hero{min-height:100svh;display:flex;align-items:center;padding:128px 0 90px}
+  .hero .mark{width:100px;height:100px;color:var(--snow);margin-bottom:38px}
+  .hero h1{font-weight:900;font-size:clamp(46px,8.8vw,120px);line-height:1.02;letter-spacing:-.03em}
+  .hero .sub{margin-top:28px;max-width:30em;color:var(--g1);font-weight:400;font-size:clamp(16px,1.9vw,20px);line-height:1.85}
+  .hero .actions{margin-top:42px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .hero .free{font-size:12px;letter-spacing:.14em;color:var(--g2);text-transform:uppercase;font-weight:500}
+  .hero .mark .tile{transform-box:fill-box;transform-origin:center;opacity:0;transform:scale(.45)}
+  .play .hero .mark .t1{animation:pop .62s cubic-bezier(.2,.85,.25,1) .08s forwards}
+  .play .hero .mark .t2{animation:pop .62s cubic-bezier(.2,.85,.25,1) .26s forwards}
+  .play .hero .mark .t3{animation:pop .62s cubic-bezier(.2,.85,.25,1) .36s forwards}
+  .play .hero .mark .t4{animation:pop .62s cubic-bezier(.2,.85,.25,1) .16s forwards}
+  @keyframes pop{to{opacity:1;transform:scale(1)}}
+  .scrollcue{position:absolute;left:28px;bottom:30px;font-size:11px;letter-spacing:.32em;color:var(--g2);display:flex;align-items:center;gap:10px;font-weight:500}
+  .scrollcue::before{content:"";width:34px;height:1px;background:var(--g2);display:inline-block}
+
+  /* concept band (brief) */
+  .concept{padding:72px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .concept .eyebrow{margin-bottom:40px}
+  .concept .points{display:grid;grid-template-columns:1fr;gap:36px}
+  @media(min-width:760px){.concept .points{grid-template-columns:repeat(3,1fr);gap:0}}
+  .point{padding:4px 0}
+  @media(min-width:760px){.point{padding:0 40px;border-left:1px solid var(--hair)}.point:first-child{padding-left:0;border-left:0}}
+  .point h3{font-weight:700;font-size:clamp(18px,2vw,22px);line-height:1.5;letter-spacing:-.01em;margin-bottom:12px;word-break:keep-all}
+  .point p{color:var(--g1);font-size:14.5px;line-height:1.8}
+
+  /* feature rows */
+  .feature .row{display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
+  .feature .row + .row{margin-top:108px}
+  @media(min-width:900px){
+    .feature .row{grid-template-columns:1fr 1fr;gap:80px}
+    .feature .row.flip .copy{order:2}
+    .feature .row.flip .visual{order:1}
+  }
+  .num{font-weight:700;font-size:12px;letter-spacing:.2em;color:var(--g2);margin-bottom:18px;text-transform:uppercase}
+  .feature h2{font-weight:700;font-size:clamp(27px,3.7vw,42px);line-height:1.24;letter-spacing:-.02em;margin-bottom:22px}
+  .feature .body{color:var(--g1);font-size:clamp(15px,1.6vw,17px);line-height:1.95;max-width:32em}
+  .feature .body b{color:var(--snow);font-weight:700}
+  .visual{display:flex;justify-content:center}
+  .shot{width:100%;max-width:286px;height:auto;display:block}
+
+  /* detail grid */
+  .details .eyebrow{margin-bottom:18px}
+  .details h2{font-weight:900;font-size:clamp(28px,4.4vw,48px);line-height:1.1;letter-spacing:-.025em;margin-bottom:56px}
+  .grid3{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--hair)}
+  @media(min-width:680px){.grid3{grid-template-columns:1fr 1fr}}
+  @media(min-width:980px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+  .card{padding:34px 32px 34px 0;border-bottom:1px solid var(--hair)}
+  @media(min-width:680px){
+    .card{padding:34px 36px;border-right:1px solid var(--hair)}
+    .card:nth-child(2n){border-right:0}
+  }
+  @media(min-width:980px){
+    .card{border-right:1px solid var(--hair)}
+    .card:nth-child(2n){border-right:1px solid var(--hair)}
+    .card:nth-child(3n){border-right:0}
+  }
+  .card .k{font-weight:700;font-size:12px;letter-spacing:.16em;color:var(--g2);margin-bottom:14px;text-transform:uppercase}
+  .card h3{font-weight:700;font-size:clamp(18px,2vw,21px);line-height:1.4;margin-bottom:10px;letter-spacing:-.01em}
+  .card p{color:var(--g1);font-size:14.5px;line-height:1.85}
+
+  /* teaser */
+  .teaser{text-align:center;overflow:hidden}
+  .teaser .ghost{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  .teaser .ghost .mark{width:min(120vw,1000px);height:auto;color:#161618}
+  .teaser .inner{position:relative;z-index:1}
+  .teaser .badge{display:inline-block;border:1px solid var(--g1);color:var(--snow);font-weight:700;font-size:12px;letter-spacing:.24em;text-transform:uppercase;padding:7px 18px;margin-bottom:28px}
+  .teaser h2{font-weight:900;font-size:clamp(30px,6vw,68px);line-height:1.1;letter-spacing:-.03em;margin-bottom:24px}
+  .teaser p{color:var(--g1);max-width:30em;margin:0 auto;font-size:clamp(15px,1.8vw,18px);line-height:1.95}
+
+  /* privacy */
+  .privacy .grid{display:grid;grid-template-columns:1fr;gap:54px;align-items:center}
+  @media(min-width:900px){.privacy .grid{grid-template-columns:1.1fr .9fr;gap:84px}}
+  .privacy h2{font-weight:700;font-size:clamp(28px,4.2vw,46px);line-height:1.18;letter-spacing:-.02em;margin:18px 0 24px}
+  .privacy .body{color:var(--g1);font-size:clamp(15px,1.6vw,17px);line-height:1.95;max-width:34em}
+  .privacy .body b{color:var(--snow);font-weight:700}
+  .origin{margin-top:34px;padding-top:28px;border-top:1px solid var(--hair);color:var(--g1);font-size:15px;line-height:2}
+  .origin .q{color:var(--snow);font-weight:500}
+  .privacy .shot{max-width:264px}
+
+  /* FAQ */
+  .faq .eyebrow{margin-bottom:18px}
+  .faq h2{font-weight:900;font-size:clamp(28px,4.4vw,48px);line-height:1.1;letter-spacing:-.025em;margin-bottom:48px}
+  .faqlist{border-top:1px solid var(--hair);max-width:840px}
+  .qa{border-bottom:1px solid var(--hair)}
+  .qa summary{list-style:none;cursor:pointer;position:relative;padding:24px 46px 24px 0;font-weight:700;font-size:clamp(16px,1.9vw,19px);letter-spacing:-.01em;line-height:1.5}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary::after{content:"";position:absolute;right:8px;top:50%;width:9px;height:9px;border-right:1.6px solid var(--g1);border-bottom:1.6px solid var(--g1);transform:translateY(-65%) rotate(45deg);transition:transform .25s ease}
+  .qa[open] summary::after{transform:translateY(-35%) rotate(-135deg)}
+  .qa p{color:var(--g1);font-size:15.5px;line-height:1.9;max-width:46em;padding:0 46px 28px 0}
+
+  /* final CTA */
+  .finalcta{background:var(--snow);color:var(--ink);text-align:center;padding:140px 0;margin-top:8px;clip-path:var(--slash)}
+  .finalcta .mark{width:58px;height:58px;color:var(--ink);margin:0 auto 32px}
+  .finalcta h2{font-weight:900;font-size:clamp(34px,7vw,84px);line-height:1.04;letter-spacing:-.03em;margin-bottom:38px}
+  .finalcta .free{display:block;margin-top:20px;font-size:12px;letter-spacing:.14em;color:var(--g2);text-transform:uppercase;font-weight:500}
+
+  /* footer */
+  footer{padding:62px 0 56px;background:var(--ink)}
+  .footwrap{display:flex;flex-wrap:wrap;gap:28px 40px;align-items:center;justify-content:space-between}
+  .footbrand{display:flex;align-items:center;gap:12px}
+  .footbrand .mark{width:24px;height:24px;color:var(--snow)}
+  .footbrand .wordmark{font-weight:700;letter-spacing:.24em;font-size:16px;color:var(--snow)}
+  .flinks{display:flex;gap:26px;flex-wrap:wrap}
+  .flinks a{color:var(--g1);text-decoration:none;font-size:14px;transition:color .2s}
+  .flinks a:hover{color:var(--snow)}
+  .fcopy{width:100%;font-size:11px;letter-spacing:.12em;color:var(--g2);margin-top:10px}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .85s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .hero .mark .tile{opacity:1;transform:none;animation:none!important}
+    .scrollcue{display:none}html{scroll-behavior:auto}
+  }
+  :focus-visible{outline:2px solid var(--snow);outline-offset:3px}
+  .finalcta :focus-visible{outline-color:var(--ink)}
+</style>
+</head>
+<body>
+
+<svg class="defs" aria-hidden="true"><defs><g id="gestalt">
+  <rect x="192" y="192" width="280" height="280" rx="32"/>
+  <rect x="552" y="192" width="280" height="280" rx="32"/>
+  <path d="M482.615 552H243.2C225.278 552 216.317 552 209.472 555.488C203.451 558.556 198.556 563.451 195.488 569.472C192 576.317 192 585.278 192 603.2V742.859C192 772.092 192 786.708 198.137 795.131C203.489 802.477 211.713 807.2 220.755 808.122C231.122 809.179 243.748 801.814 268.998 787.084L508.413 647.426C556.928 619.125 581.186 604.975 584.57 592.185C587.489 581.153 584.312 569.401 576.232 561.342C566.864 552 538.781 552 482.615 552Z"/>
+  <path d="M541.385 832L780.8 832C798.722 832 807.683 832 814.528 828.512C820.549 825.444 825.444 820.549 828.512 814.528C832 807.683 832 798.722 832 780.8L832 641.141C832 611.908 832 597.292 825.863 588.869C820.511 581.523 812.287 576.8 803.245 575.878C792.878 574.821 780.252 582.186 755.002 596.916L515.586 736.575C467.072 764.875 442.814 779.025 439.43 791.815C436.511 802.847 439.688 814.599 447.768 822.658C457.136 832 485.219 832 541.385 832Z"/>
+</g></defs></svg>
+
+<nav id="nav">
+  <a class="navbrand" href="#top">
+    <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#gestalt"/></svg>
+    <span class="wordmark">TRZR</span>
+  </a>
+  <div class="right">
+    <div class="langtoggle" role="group" aria-label="Language">
+      <button id="lang-ja" class="active" onclick="setLang('ja')">JA</button>
+      <button id="lang-en" onclick="setLang('en')">EN</button>
+    </div>
+    <a class="badge badge-nav" href="https://apps.apple.com/app/id6771160852" target="_blank" rel="noopener">
+      <img class="appstore-badge" data-ja="badge_jp/white.svg" data-en="badge_en/white.svg" src="badge_jp/white.svg" alt="App Store からダウンロード">
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero sec" id="top">
+  <div class="wrap">
+    <svg class="mark" viewBox="0 0 1024 1024" aria-label="TRZR">
+      <rect class="tile t1" x="192" y="192" width="280" height="280" rx="32" fill="currentColor"/>
+      <rect class="tile t4" x="552" y="192" width="280" height="280" rx="32" fill="currentColor"/>
+      <path class="tile t2" fill="currentColor" d="M482.615 552H243.2C225.278 552 216.317 552 209.472 555.488C203.451 558.556 198.556 563.451 195.488 569.472C192 576.317 192 585.278 192 603.2V742.859C192 772.092 192 786.708 198.137 795.131C203.489 802.477 211.713 807.2 220.755 808.122C231.122 809.179 243.748 801.814 268.998 787.084L508.413 647.426C556.928 619.125 581.186 604.975 584.57 592.185C587.489 581.153 584.312 569.401 576.232 561.342C566.864 552 538.781 552 482.615 552Z"/>
+      <path class="tile t3" fill="currentColor" d="M541.385 832L780.8 832C798.722 832 807.683 832 814.528 828.512C820.549 825.444 825.444 820.549 828.512 814.528C832 807.683 832 798.722 832 780.8L832 641.141C832 611.908 832 597.292 825.863 588.869C820.511 581.523 812.287 576.8 803.245 575.878C792.878 574.821 780.252 582.186 755.002 596.916L515.586 736.575C467.072 764.875 442.814 779.025 439.43 791.815C436.511 802.847 439.688 814.599 447.768 822.658C457.136 832 485.219 832 541.385 832Z"/>
+    </svg>
+    <h1 data-i18n="hero.title">書くほど、<br>見返したくなる。</h1>
+    <p class="sub" data-i18n="hero.sub">思いついた一行を、ためておく。テーマ・人・場所・天気とともに——あとで心地よく、さかのぼれる、自分だけの日記。</p>
+    <div class="actions">
+      <a class="badge" href="https://apps.apple.com/app/id6771160852" target="_blank" rel="noopener">
+        <img class="appstore-badge" data-ja="badge_jp/white.svg" data-en="badge_en/white.svg" src="badge_jp/white.svg" alt="App Store からダウンロード">
+      </a>
+      <span class="free" data-i18n="hero.free">iPhone · Free</span>
+    </div>
+  </div>
+  <span class="scrollcue" data-i18n="hero.scroll">SCROLL</span>
+</header>
+
+<!-- CONCEPT (brief) -->
+<section class="concept">
+  <div class="wrap">
+    <p class="eyebrow reveal" data-i18n="concept.label">What TRZR is about</p>
+    <div class="points reveal">
+      <div class="point">
+        <h3 data-i18n="concept.1.h">自分だけの、タイムライン。</h3>
+        <p data-i18n="concept.1.p">流れていくのは、過去のあなた自身の一行だけ。</p>
+      </div>
+      <div class="point">
+        <h3 data-i18n="concept.2.h">いいねも、比較も、ない。</h3>
+        <p data-i18n="concept.2.p">数字で競わせる仕組みを、はじめから持たない。</p>
+      </div>
+      <div class="point">
+        <h3 data-i18n="concept.3.h">言葉は、外に出ない。</h3>
+        <p data-i18n="concept.3.p">投稿の中身はあなたの iCloud のみ。第三者に渡らない。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES (concrete) -->
+<section class="feature sec">
+  <div class="wrap">
+    <div class="row reveal">
+      <div class="copy">
+        <p class="num">01 — 書く</p>
+        <h2 data-i18n="f1.title">思いついた瞬間に、書く。</h2>
+        <p class="body" data-i18n="f1.body">右下の<b>＋</b>をタップして本文を打つだけ。<b>タイトルも日付入力もいらない。</b>投稿前にテーマを選び、よく使うタグはサジェストから一発で添付。写真やリンクも、その場で添えられます。</p>
+      </div>
+      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_2.png" alt="TRZR の投稿作成画面"></div>
+    </div>
+
+    <div class="row flip reveal">
+      <div class="copy">
+        <p class="num">02 — 束ねる</p>
+        <h2 data-i18n="f2.title">テーマとタグで、<br>流れを束ねる。</h2>
+        <p class="body" data-i18n="f2.body">「日々の暮らし」「仕事メモ」「読書ログ」——<b>テーマで章を分け、上部のピルで瞬時に絞り込み。</b>#タグはいくつでも付けられ、<b>@で書いた名前は「人」として独立</b>します。呼び方を変えれば、過去の投稿もまとめて更新。</p>
+      </div>
+      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_1.png" alt="TRZR のタイムライン画面"></div>
+    </div>
+
+    <div class="row reveal">
+      <div class="copy">
+        <p class="num">03 — 掘る</p>
+        <h2 data-i18n="f3.title">数百件から、<br>数秒で掘り当てる。</h2>
+        <p class="body" data-i18n="f3.body"><b>キーワード検索とタグの AND 絞り込み</b>を組み合わせて、目的の一行へ。「よく書く話題」「よく行く場所」から辿ることもできます。<b>「あの考え、どこに書いたっけ」</b>が、すぐ解決する。</p>
+      </div>
+      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_4.png" alt="TRZR の検索画面"></div>
+    </div>
+
+    <div class="row flip reveal">
+      <div class="copy">
+        <p class="num">04 — 整える</p>
+        <h2 data-i18n="f4.title">読み返す時間まで、<br>整える。</h2>
+        <p class="body" data-i18n="f4.body">本文フォントは<b>和文 4・欧文 4</b>から選べて、文字サイズも自由に調整。テーマには<b>和の色 8 種</b>を添えて見分けやすく。自分の手に馴染む見た目に、仕立てられます。</p>
+      </div>
+      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_5.png" alt="TRZR のフォント設定画面"></div>
+    </div>
+  </div>
+</section>
+
+<!-- DETAIL GRID -->
+<section class="details sec">
+  <div class="wrap">
+    <p class="eyebrow reveal" data-i18n="details.label">The details</p>
+    <h2 class="reveal" data-i18n="details.title">細部まで、<br>書く人のために。</h2>
+    <div class="grid3 reveal">
+      <div class="card">
+        <p class="k" data-i18n="d1.k">Seasons</p>
+        <h3 data-i18n="d1.h">天気と七十二候</h3>
+        <p data-i18n="d1.p">投稿した日の天気と、五日ごとに移ろう七十二候(候)が、一行にそっと添います。</p>
+      </div>
+      <div class="card">
+        <p class="k" data-i18n="d2.k">Places</p>
+        <h3 data-i18n="d2.h">場所</h3>
+        <p data-i18n="d2.p">マップから選んで「自宅」「行きつけのカフェ」と名付け、次回から再利用できます。</p>
+      </div>
+      <div class="card">
+        <p class="k" data-i18n="d3.k">Links</p>
+        <h3 data-i18n="d3.h">リンクプレビュー</h3>
+        <p data-i18n="d3.p">URL を貼ると OGP のタイトルと画像をカードで表示。あの日読んだ記事も残せます。</p>
+      </div>
+      <div class="card">
+        <p class="k" data-i18n="d4.k">Photos</p>
+        <h3 data-i18n="d4.h">写真</h3>
+        <p data-i18n="d4.p">1 投稿に複数枚を添付。iCloud 経由で、機種変更のあともすべて戻ります。</p>
+      </div>
+      <div class="card">
+        <p class="k" data-i18n="d5.k">Lock</p>
+        <h3 data-i18n="d5.h">Face ID ロック</h3>
+        <p data-i18n="d5.p">日記を Face ID で保護。アプリ切替時はすりガラスで本文を隠します。</p>
+      </div>
+      <div class="card">
+        <p class="k" data-i18n="d6.k">Sync</p>
+        <h3 data-i18n="d6.h">iCloud 同期</h3>
+        <p data-i18n="d6.p">あなたの iCloud だけに保存し、複数の iPhone で続きから。設定はいりません。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEASER v1.3 -->
+<section class="teaser sec reveal">
+  <div class="ghost"><svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#gestalt"/></svg></div>
+  <div class="wrap inner">
+    <span class="badge" data-i18n="teaser.badge">Coming soon</span>
+    <h2 data-i18n="teaser.title">過去の自分と、<br>対話する。</h2>
+    <p data-i18n="teaser.body">一年前の自分の一行に、いまの自分がそっと言葉を返す。すべては端末の中だけで動く AI——あなたの言葉は、どこにも送られません。</p>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section class="privacy sec reveal">
+  <div class="wrap grid">
+    <div class="copy">
+      <p class="eyebrow" data-i18n="privacy.kicker">Privacy</p>
+      <h2 data-i18n="privacy.title">プライバシーは、<br>設計の話。</h2>
+      <p class="body" data-i18n="privacy.body">投稿・写真・位置・タグ・テーマは、<b>あなた自身の iCloud（CloudKit）にのみ</b>保存されます。独自サーバーはなく、<b>投稿の中身が第三者に渡ることはありません。</b>利用状況は匿名・集計のみで、本文は一切送りません。</p>
+      <p class="origin">
+        <span data-i18n="privacy.origin">アプリ名の "TRZR（つれづれ）" は、吉田兼好『徒然草』から。</span>
+        <span class="q" data-i18n="privacy.quote">「つれづれなるまま、日ぐらし硯にむかひて……」</span>
+        <span data-i18n="privacy.origin2">手が動くまま、心に浮かぶままに。</span>
+      </p>
+    </div>
+    <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_3.png" alt="TRZR の Face ID ロック画面"></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq sec reveal">
+  <div class="wrap">
+    <p class="eyebrow" data-i18n="faq.label">FAQ</p>
+    <h2 data-i18n="faq.title">よくある質問。</h2>
+    <div class="faqlist">
+      <details class="qa">
+        <summary data-i18n="faq.q1">無料ですか？</summary>
+        <p data-i18n="faq.a1">はい。すべての機能を無料で使えます。</p>
+      </details>
+      <details class="qa">
+        <summary data-i18n="faq.q2">自分の投稿は、他の人に見られますか？</summary>
+        <p data-i18n="faq.a2">いいえ。TRZR に他人は登場しません。タイムラインに流れるのは自分の投稿だけで、共有やフォローの機能もありません。</p>
+      </details>
+      <details class="qa">
+        <summary data-i18n="faq.q3">データはどこに保存されますか？</summary>
+        <p data-i18n="faq.a3">あなた自身の iCloud（CloudKit）のみです。独自サーバーはなく、投稿の中身が第三者に渡ることはありません。利用状況は匿名・集計のみを記録します。</p>
+      </details>
+      <details class="qa">
+        <summary data-i18n="faq.q4">複数の iPhone で同期できますか？</summary>
+        <p data-i18n="faq.a4">同じ Apple ID でサインインしていれば、iCloud 経由で自動的に同期します。特別な設定はいりません。</p>
+      </details>
+      <details class="qa">
+        <summary data-i18n="faq.q5">通知は来ますか？</summary>
+        <p data-i18n="faq.a5">既定ではオフです。毎日のリマインダーを任意でオンにでき、時刻も選べます。連続日数で急かすような通知はしません。</p>
+      </details>
+      <details class="qa">
+        <summary data-i18n="faq.q6">アカウント登録は必要ですか？</summary>
+        <p data-i18n="faq.a6">不要です。お使いの iCloud を利用するだけで、メール登録やパスワード作成はありません。</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="finalcta reveal">
+  <div class="wrap">
+    <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#gestalt"/></svg>
+    <h2 data-i18n="cta.title">つれづれなるまま、<br>書きはじめる。</h2>
+    <a class="badge" href="https://apps.apple.com/app/id6771160852" target="_blank" rel="noopener">
+      <img class="appstore-badge" data-ja="badge_jp/black.svg" data-en="badge_en/black.svg" src="badge_jp/black.svg" alt="App Store からダウンロード">
+    </a>
+    <span class="free" data-i18n="cta.free">iPhone · Free</span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footwrap">
+    <div class="footbrand">
+      <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#gestalt"/></svg>
+      <span class="wordmark">TRZR</span>
+    </div>
+    <div class="flinks">
+      <a href="https://apps.apple.com/app/id6771160852" target="_blank" rel="noopener" data-i18n="footer.app">App Store</a>
+      <a href="https://trzr-app.github.io/policy/" target="_blank" rel="noopener" data-i18n="footer.privacy">プライバシーポリシー</a>
+      <a href="https://trzr-app.github.io/policy/support/" target="_blank" rel="noopener" data-i18n="footer.support">サポート</a>
+      <a href="https://x.com/trzrapp" target="_blank" rel="noopener">X @trzrapp</a>
+    </div>
+    <span class="fcopy">© 2026 TRZR</span>
+  </div>
+</footer>
+
+<script>
+const STRINGS = {
+  ja: {
+    "store.small":"DOWNLOAD ON THE","store.big":"App Store",
+    "hero.title":"書くほど、<br>見返したくなる。",
+    "hero.sub":"思いついた一行を、ためておく。テーマ・人・場所・天気とともに——あとで心地よく、さかのぼれる、自分だけの日記。",
+    "hero.free":"iPhone · Free","hero.scroll":"SCROLL",
+    "concept.label":"What TRZR is about",
+    "concept.1.h":"自分だけの、タイムライン。","concept.1.p":"流れていくのは、過去のあなた自身の一行だけ。",
+    "concept.2.h":"いいねも、比較も、ない。","concept.2.p":"数字で競わせる仕組みを、はじめから持たない。",
+    "concept.3.h":"言葉は、外に出ない。","concept.3.p":"投稿の中身はあなたの iCloud のみ。第三者に渡らない。",
+    "f1.title":"思いついた瞬間に、書く。",
+    "f1.body":"右下の<b>＋</b>をタップして本文を打つだけ。<b>タイトルも日付入力もいらない。</b>投稿前にテーマを選び、よく使うタグはサジェストから一発で添付。写真やリンクも、その場で添えられます。",
+    "f2.title":"テーマとタグで、<br>流れを束ねる。",
+    "f2.body":"「日々の暮らし」「仕事メモ」「読書ログ」——<b>テーマで章を分け、上部のピルで瞬時に絞り込み。</b>#タグはいくつでも付けられ、<b>@で書いた名前は「人」として独立</b>します。呼び方を変えれば、過去の投稿もまとめて更新。",
+    "f3.title":"数百件から、<br>数秒で掘り当てる。",
+    "f3.body":"<b>キーワード検索とタグの AND 絞り込み</b>を組み合わせて、目的の一行へ。「よく書く話題」「よく行く場所」から辿ることもできます。<b>「あの考え、どこに書いたっけ」</b>が、すぐ解決する。",
+    "f4.title":"読み返す時間まで、<br>整える。",
+    "f4.body":"本文フォントは<b>和文 4・欧文 4</b>から選べて、文字サイズも自由に調整。テーマには<b>和の色 8 種</b>を添えて見分けやすく。自分の手に馴染む見た目に、仕立てられます。",
+    "details.label":"The details","details.title":"細部まで、<br>書く人のために。",
+    "d1.k":"Seasons","d1.h":"天気と七十二候","d1.p":"投稿した日の天気と、五日ごとに移ろう七十二候(候)が、一行にそっと添います。",
+    "d2.k":"Places","d2.h":"場所","d2.p":"マップから選んで「自宅」「行きつけのカフェ」と名付け、次回から再利用できます。",
+    "d3.k":"Links","d3.h":"リンクプレビュー","d3.p":"URL を貼ると OGP のタイトルと画像をカードで表示。あの日読んだ記事も残せます。",
+    "d4.k":"Photos","d4.h":"写真","d4.p":"1 投稿に複数枚を添付。iCloud 経由で、機種変更のあともすべて戻ります。",
+    "d5.k":"Lock","d5.h":"Face ID ロック","d5.p":"日記を Face ID で保護。アプリ切替時はすりガラスで本文を隠します。",
+    "d6.k":"Sync","d6.h":"iCloud 同期","d6.p":"あなたの iCloud だけに保存し、複数の iPhone で続きから。設定はいりません。",
+    "teaser.badge":"Coming soon","teaser.title":"過去の自分と、<br>対話する。",
+    "teaser.body":"一年前の自分の一行に、いまの自分がそっと言葉を返す。すべては端末の中だけで動く AI——あなたの言葉は、どこにも送られません。",
+    "privacy.kicker":"Privacy","privacy.title":"プライバシーは、<br>設計の話。",
+    "privacy.body":"投稿・写真・位置・タグ・テーマは、<b>あなた自身の iCloud（CloudKit）にのみ</b>保存されます。独自サーバーはなく、<b>投稿の中身が第三者に渡ることはありません。</b>利用状況は匿名・集計のみで、本文は一切送りません。",
+    "privacy.origin":"アプリ名の \"TRZR（つれづれ）\" は、吉田兼好『徒然草』から。",
+    "privacy.quote":"「つれづれなるまま、日ぐらし硯にむかひて……」",
+    "privacy.origin2":"手が動くまま、心に浮かぶままに。",
+    "faq.label":"FAQ","faq.title":"よくある質問。",
+    "faq.q1":"無料ですか？","faq.a1":"はい。すべての機能を無料で使えます。",
+    "faq.q2":"自分の投稿は、他の人に見られますか？","faq.a2":"いいえ。TRZR に他人は登場しません。タイムラインに流れるのは自分の投稿だけで、共有やフォローの機能もありません。",
+    "faq.q3":"データはどこに保存されますか？","faq.a3":"あなた自身の iCloud（CloudKit）のみです。独自サーバーはなく、投稿の中身が第三者に渡ることはありません。利用状況は匿名・集計のみを記録します。",
+    "faq.q4":"複数の iPhone で同期できますか？","faq.a4":"同じ Apple ID でサインインしていれば、iCloud 経由で自動的に同期します。特別な設定はいりません。",
+    "faq.q5":"通知は来ますか？","faq.a5":"既定ではオフです。毎日のリマインダーを任意でオンにでき、時刻も選べます。連続日数で急かすような通知はしません。",
+    "faq.q6":"アカウント登録は必要ですか？","faq.a6":"不要です。お使いの iCloud を利用するだけで、メール登録やパスワード作成はありません。",
+    "cta.title":"つれづれなるまま、<br>書きはじめる。","cta.free":"iPhone · Free",
+    "footer.app":"App Store","footer.privacy":"プライバシーポリシー","footer.support":"サポート"
+  },
+  en: {
+    "store.small":"DOWNLOAD ON THE","store.big":"App Store",
+    "hero.title":"The more you write,<br>the more you look back.",
+    "hero.sub":"Jot down a line as it comes — with its theme, people, place, and weather. A diary that's a pleasure to scroll back through.",
+    "hero.free":"iPhone · Free","hero.scroll":"SCROLL",
+    "concept.label":"What TRZR is about",
+    "concept.1.h":"A timeline of your own.","concept.1.p":"Nothing scrolls by but your own words, from the past.",
+    "concept.2.h":"No likes, no comparison.","concept.2.p":"There's no machinery to measure you against anyone.",
+    "concept.3.h":"Your words stay private.","concept.3.p":"Post contents live only in your iCloud. Never shared with a third party.",
+    "f1.title":"Write the moment<br>it occurs to you.",
+    "f1.body":"Tap the <b>+</b> and start typing. <b>No title, no date field.</b> Pick a theme before posting, add your frequent tags from suggestions in one tap, and attach photos or links right there.",
+    "f2.title":"Bundle the stream<br>with themes & tags.",
+    "f2.body":"“Daily Life,” “Work Notes,” “Reading Log” — <b>themes split entries into chapters, and the pills up top filter instantly.</b> Add any number of #tags, and <b>names written with @ become People.</b> Rename one and every past mention updates with it.",
+    "f3.title":"Find one line among<br>hundreds, in seconds.",
+    "f3.body":"Combine <b>keyword search with tag AND-filtering</b> to reach the exact line. Or trace it back through your frequent topics and places. <b>“Where did I write that?”</b> — solved instantly.",
+    "f4.title":"Tune even the way<br>you re-read.",
+    "f4.body":"Choose body fonts from <b>4 Japanese and 4 Latin</b> faces and set the size freely. Give each theme one of <b>8 traditional Japanese hues</b>. Shape it into something that fits your own hand.",
+    "details.label":"The details","details.title":"Built for<br>people who write.",
+    "d1.k":"Seasons","d1.h":"Weather & micro-seasons","d1.p":"The day's weather and the 72 micro-seasons (kō), which shift every five days, quietly ride along.",
+    "d2.k":"Places","d2.h":"Places","d2.p":"Pick a spot from the map, name it “Home” or your café, and reuse it next time.",
+    "d3.k":"Links","d3.h":"Link previews","d3.p":"Paste a URL and get a clean OGP card with title and image. Keep what you were reading that day.",
+    "d4.k":"Photos","d4.h":"Photos","d4.p":"Attach several photos per entry. They all return via iCloud, even on a new device.",
+    "d5.k":"Lock","d5.h":"Face ID lock","d5.p":"Protect your diary with Face ID; frosted glass hides the body in the app switcher.",
+    "d6.k":"Sync","d6.h":"iCloud sync","d6.p":"Saved only to your iCloud, continued across your iPhones. No setup required.",
+    "teaser.badge":"Coming soon","teaser.title":"A conversation<br>with your past self.",
+    "teaser.body":"Your words from a year ago, met by who you are today. Powered entirely on-device — your words never leave your iPhone.",
+    "privacy.kicker":"Privacy","privacy.title":"Privacy, by<br>architecture.",
+    "privacy.body":"Entries, photos, location, tags, and themes are stored <b>only in your own iCloud (CloudKit)</b>. There's no proprietary server, and <b>the contents of your posts never reach a third party.</b> Usage stats are anonymous and aggregate only — never your text.",
+    "privacy.origin":"The name TRZR (“tsure-zure”) comes from Tsurezuregusa, Yoshida Kenkō's 14th-century essays.",
+    "privacy.quote":"“With nothing else to do, I sit before my inkstone and jot down whatever drifts into my mind…”",
+    "privacy.origin2":"Writing because you feel like it, not because you have to.",
+    "faq.label":"FAQ","faq.title":"Common questions.",
+    "faq.q1":"Is it free?","faq.a1":"Yes. Every feature is free to use.",
+    "faq.q2":"Can other people see my entries?","faq.a2":"No. There's no one else in TRZR. Your timeline holds only your own entries — there's no sharing and no following.",
+    "faq.q3":"Where is my data stored?","faq.a3":"Only in your own iCloud (CloudKit). There's no proprietary server, and the contents of your posts never reach a third party. Only anonymous, aggregate usage stats are recorded.",
+    "faq.q4":"Does it sync across iPhones?","faq.a4":"If you're signed in with the same Apple ID, it syncs automatically via iCloud. No special setup needed.",
+    "faq.q5":"Will it send notifications?","faq.a5":"Off by default. You can optionally turn on a daily reminder and choose the time. It never nags you about streaks.",
+    "faq.q6":"Do I need to create an account?","faq.a6":"No. It just uses your iCloud — no email signup, no password to create.",
+    "cta.title":"With nothing else to do,<br>start writing.","cta.free":"iPhone · Free",
+    "footer.app":"App Store","footer.privacy":"Privacy Policy","footer.support":"Support"
+  }
+};
+
+function setLang(lang){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
+    if(STRINGS[lang] && STRINGS[lang][k] !== undefined) el.innerHTML = STRINGS[lang][k];
+  });
+  document.getElementById('lang-ja').classList.toggle('active', lang==='ja');
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+  // 公式 App Store バッジを言語ロケール版に差し替え
+  document.querySelectorAll('.appstore-badge').forEach(img=>{
+    img.src = img.dataset[lang] || img.dataset.ja;
+    img.alt = lang==='ja' ? 'App Store からダウンロード' : 'Download on the App Store';
+  });
+  document.title = (lang==='ja')
+    ? 'TRZR — 書くほど、見返したくなる日記。'
+    : 'TRZR — The more you write, the more you look back.';
+}
+
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.body.classList.add('play');
+
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
+window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+const io = new IntersectionObserver((es)=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+},{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
