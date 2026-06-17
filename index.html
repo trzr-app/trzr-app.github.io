@@ -102,17 +102,17 @@
   .visual{display:flex;justify-content:center}
   .shot{width:100%;max-width:286px;height:auto;display:block}
 
-  /* device frame (shared component — see tools/mockup/frame.css).
+  /* white iPhone device frame (shared component — see tools/mockup/frame.css).
      Holds raw (un-framed) captures: screenshots OR looping video. */
-  .device{--dev-w:clamp(220px,64vw,300px);--dev-ar:.46;--dev-radius:.135;--dev-bezel:2.6%;
-    position:relative;width:var(--dev-w);aspect-ratio:var(--dev-ar);background:#0a0a0b;
+  .device{--dev-w:clamp(220px,64vw,300px);--dev-ar:.46;--dev-radius:.135;--dev-bezel:3.0%;
+    position:relative;width:var(--dev-w);aspect-ratio:var(--dev-ar);
+    background:linear-gradient(135deg,#dcdce1 0%,#fafafa 20%,#ffffff 48%,#eaeaee 72%,#d4d4da 100%);
     border-radius:calc(var(--dev-w)*var(--dev-radius));padding:var(--dev-bezel);
-    box-shadow:0 2px 4px rgba(0,0,0,.6),0 30px 70px rgba(0,0,0,.5),inset 0 0 0 1.5px #2a2a2d,inset 0 0 0 3px #050506}
+    box-shadow:0 2px 5px rgba(0,0,0,.35),0 28px 70px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.85),inset 0 0 0 2.5px rgba(0,0,0,.06)}
   .device .screen{position:relative;width:100%;height:100%;overflow:hidden;
-    border-radius:calc(var(--dev-w)*(var(--dev-radius) - var(--dev-bezel)/100));background:#000}
+    border-radius:calc(var(--dev-w)*(var(--dev-radius) - var(--dev-bezel)/100));background:#000;box-shadow:0 0 0 2px #0c0c0d}
   .device .screen img,.device .screen video{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
-  .device .island{position:absolute;top:2.6%;left:50%;transform:translateX(-50%);width:30%;height:3.4%;background:#000;border-radius:99px;z-index:2}
-  .device .btn{position:absolute;background:#1a1a1c;border-radius:2px}
+  .device .btn{position:absolute;background:#c4c4ca;border-radius:2px;box-shadow:0 0 1px rgba(0,0,0,.3)}
   .device .btn.action{left:-2px;top:16%;width:3px;height:5%}
   .device .btn.vol-up{left:-2px;top:24%;width:3px;height:8%}
   .device .btn.vol-dn{left:-2px;top:35%;width:3px;height:8%}
