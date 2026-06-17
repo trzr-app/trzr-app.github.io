@@ -102,6 +102,22 @@
   .visual{display:flex;justify-content:center}
   .shot{width:100%;max-width:286px;height:auto;display:block}
 
+  /* device frame (shared component — see tools/mockup/frame.css) */
+  .device{--dev-w:clamp(220px,64vw,300px);--dev-ar:.462;--dev-radius:.135;--dev-bezel:2.6%;
+    position:relative;width:var(--dev-w);aspect-ratio:var(--dev-ar);background:#0a0a0b;
+    border-radius:calc(var(--dev-w)*var(--dev-radius));padding:var(--dev-bezel);
+    box-shadow:0 2px 4px rgba(0,0,0,.6),0 30px 70px rgba(0,0,0,.5),inset 0 0 0 1.5px #2a2a2d,inset 0 0 0 3px #050506}
+  .device .screen{position:relative;width:100%;height:100%;overflow:hidden;
+    border-radius:calc(var(--dev-w)*(var(--dev-radius) - var(--dev-bezel)/100));background:#000}
+  .device .screen img,.device .screen video{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+  .device .island{position:absolute;top:2.6%;left:50%;transform:translateX(-50%);width:30%;height:3.4%;background:#000;border-radius:99px;z-index:2}
+  .device .btn{position:absolute;background:#1a1a1c;border-radius:2px}
+  .device .btn.action{left:-2px;top:16%;width:3px;height:5%}
+  .device .btn.vol-up{left:-2px;top:24%;width:3px;height:8%}
+  .device .btn.vol-dn{left:-2px;top:35%;width:3px;height:8%}
+  .device .btn.power{right:-2px;top:30%;width:3px;height:12%}
+  .privacy .device{--dev-w:clamp(210px,58vw,272px)}
+
   /* detail grid */
   .details .eyebrow{margin-bottom:18px}
   .details h2{font-weight:900;font-size:clamp(28px,4.4vw,48px);line-height:1.1;letter-spacing:-.025em;margin-bottom:56px}
@@ -257,7 +273,7 @@
         <h2 data-i18n="f1.title">思いついた瞬間に、書く。</h2>
         <p class="body" data-i18n="f1.body">右下の<b>＋</b>をタップして本文を打つだけ。<b>タイトルも日付入力もいらない。</b>投稿前にテーマを選び、よく使うタグはサジェストから一発で添付。写真やリンクも、その場で添えられます。</p>
       </div>
-      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_2.png" alt="TRZR の投稿作成画面"></div>
+      <div class="visual"><div class="device"><div class="island"></div><span class="btn action"></span><span class="btn vol-up"></span><span class="btn vol-dn"></span><span class="btn power"></span><div class="screen"><img src="v1.2_screenshots/screenshot_v1.2_2.png" alt="TRZR の投稿作成画面"></div></div></div>
     </div>
 
     <div class="row flip reveal">
@@ -266,7 +282,7 @@
         <h2 data-i18n="f2.title">テーマとタグで、<br>流れを束ねる。</h2>
         <p class="body" data-i18n="f2.body">「日々の暮らし」「仕事メモ」「読書ログ」——<b>テーマで章を分け、上部のピルで瞬時に絞り込み。</b>#タグはいくつでも付けられ、<b>@で書いた名前は「人」として独立</b>します。呼び方を変えれば、過去の投稿もまとめて更新。</p>
       </div>
-      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_1.png" alt="TRZR のタイムライン画面"></div>
+      <div class="visual"><div class="device"><div class="island"></div><span class="btn action"></span><span class="btn vol-up"></span><span class="btn vol-dn"></span><span class="btn power"></span><div class="screen"><img src="v1.2_screenshots/screenshot_v1.2_1.png" alt="TRZR のタイムライン画面"></div></div></div>
     </div>
 
     <div class="row reveal">
@@ -275,7 +291,7 @@
         <h2 data-i18n="f3.title">数百件から、<br>数秒で掘り当てる。</h2>
         <p class="body" data-i18n="f3.body"><b>キーワード検索とタグの AND 絞り込み</b>を組み合わせて、目的の一行へ。「よく書く話題」「よく行く場所」から辿ることもできます。<b>「あの考え、どこに書いたっけ」</b>が、すぐ解決する。</p>
       </div>
-      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_4.png" alt="TRZR の検索画面"></div>
+      <div class="visual"><div class="device"><div class="island"></div><span class="btn action"></span><span class="btn vol-up"></span><span class="btn vol-dn"></span><span class="btn power"></span><div class="screen"><img src="v1.2_screenshots/screenshot_v1.2_4.png" alt="TRZR の検索画面"></div></div></div>
     </div>
 
     <div class="row flip reveal">
@@ -284,7 +300,7 @@
         <h2 data-i18n="f4.title">読み返す時間まで、<br>整える。</h2>
         <p class="body" data-i18n="f4.body">本文フォントは<b>和文 4・欧文 4</b>から選べて、文字サイズも自由に調整。テーマには<b>和の色 8 種</b>を添えて見分けやすく。自分の手に馴染む見た目に、仕立てられます。</p>
       </div>
-      <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_5.png" alt="TRZR のフォント設定画面"></div>
+      <div class="visual"><div class="device"><div class="island"></div><span class="btn action"></span><span class="btn vol-up"></span><span class="btn vol-dn"></span><span class="btn power"></span><div class="screen"><img src="v1.2_screenshots/screenshot_v1.2_5.png" alt="TRZR のフォント設定画面"></div></div></div>
     </div>
   </div>
 </section>
@@ -352,7 +368,7 @@
         <span data-i18n="privacy.origin2">手が動くまま、心に浮かぶままに。</span>
       </p>
     </div>
-    <div class="visual"><img class="shot" src="v1.2_screenshots/screenshot_v1.2_3.png" alt="TRZR の Face ID ロック画面"></div>
+    <div class="visual"><div class="device"><div class="island"></div><span class="btn action"></span><span class="btn vol-up"></span><span class="btn vol-dn"></span><span class="btn power"></span><div class="screen"><img src="v1.2_screenshots/screenshot_v1.2_3.png" alt="TRZR の Face ID ロック画面"></div></div></div>
   </div>
 </section>
 

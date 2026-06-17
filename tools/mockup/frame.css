@@ -1,0 +1,59 @@
+/* ============================================================
+   TRZR device frame — reusable mockup component
+   Single source of truth for the iPhone frame used on the
+   landing page AND for App Store screenshot generation.
+
+   Geometry is driven by CSS custom properties so one component
+   serves any size. Brand: monochrome black (see docs/brand.md).
+   ============================================================ */
+
+.device{
+  --dev-w:380px;          /* device width — the only size knob you usually set */
+  --dev-ar:0.462;         /* screen aspect W/H (iPhone 16 Pro ≈ 0.462) */
+  --dev-radius:0.135;     /* corner radius as a fraction of width */
+  --dev-bezel:2.6%;       /* uniform bezel thickness */
+
+  position:relative;
+  width:var(--dev-w);
+  aspect-ratio:var(--dev-ar);
+  background:#0a0a0b;
+  border-radius:calc(var(--dev-w) * var(--dev-radius));
+  padding:var(--dev-bezel);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.6),
+    0 30px 80px rgba(0,0,0,.55),
+    inset 0 0 0 1.5px #2a2a2d,   /* titanium rim highlight */
+    inset 0 0 0 3px #050506;
+}
+.device .screen{
+  position:relative;
+  width:100%;height:100%;
+  overflow:hidden;
+  border-radius:calc(var(--dev-w) * (var(--dev-radius) - var(--dev-bezel)/100));
+  background:#000;
+}
+.device .screen img,
+.device .screen video{
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:top center;
+  display:block;
+}
+/* Dynamic Island */
+.device .island{
+  position:absolute;top:2.6%;left:50%;transform:translateX(-50%);
+  width:30%;height:3.4%;
+  background:#000;border-radius:99px;z-index:2;
+  box-shadow:inset 0 0 0 1px #111;
+}
+/* hardware buttons (subtle) */
+.device .btn{position:absolute;background:#1a1a1c;border-radius:2px}
+.device .btn.action{left:-2.5px;top:16%;width:3px;height:5%}
+.device .btn.vol-up{left:-2.5px;top:24%;width:3px;height:8%}
+.device .btn.vol-dn{left:-2.5px;top:35%;width:3px;height:8%}
+.device .btn.power {right:-2.5px;top:30%;width:3px;height:12%}
+
+/* hide Dynamic Island / buttons when the source screenshot already
+   includes the device's own status area, to avoid doubling */
+.device.bare .island,
+.device.bare .btn{display:none}
